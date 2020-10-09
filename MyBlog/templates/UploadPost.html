@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+{% load widget_tweaks %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% include 'bootsrtap_css_header/bootstrapHeader.html' %}
+    <title>{{ title }}</title>
+</head>
+<body>
+{% include 'navbar.html' %}
+
+<form style="margin: 5% 10% 10%;" method="post" enctype="multipart/form-data">
+
+{% if form.errors %}
+ <div style="color: red;">
+        <ul>
+            {% for field in form %}
+                {% if field.errors %}<li>{{ field.label_tag }}{{ field.errors|striptags }}</li>{% endif %}
+            {% endfor %}
+        </ul>
+</div>
+{% endif %}
+{% if messages %}
+    {% for message in messages %}
+        {% if message.leve == DEFAULT_MESSAGE_LEVEL.SUCCESS %}
+            <div class="alert alert-success" role="alert">
+  {{ message }}
+</div>
+        {% endif %}
+
+    {% endfor %}
+
+
+{% endif %}
+
+    {% csrf_token %}
+  <div class="form-group">
+    <label for="exampleFormControlInput1">{{ form.postHeader.label }}:</label>
+    {{ form.postHeader }}
+  </div>
+
+  <div class="form-group">
+    <label for="exampleFormControlTextarea1">{{ "post Content" }}:</label>
+    {{ form.postData }}
+
+  </div>
+      <div class="form-group">
+    <div class="file-path-wrapper">
+      {% render_field form.postImage class+="file-path validate" placeholder="Upload your file"%}
+    </div>
+      </div>
+    {{ form.findingBot }}
+    {{ form.postAdmin }}
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+
+
+</form>
+
+</body>
+{% include 'bootsrtap_css_header/bootstrapJSFooter.html' %}
+</html>

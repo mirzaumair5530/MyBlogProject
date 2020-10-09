@@ -1,0 +1,65 @@
+{% extends 'SignIn_SignUp/Main.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+
+    {% include 'navbar.html' %}
+
+
+<div class="wrapper fadeInDown">
+  <div id="formContent">
+    <!-- Tabs Titles -->
+
+    <!-- Icon -->
+    <div >
+        <img src="https://img.icons8.com/material-sharp/48/000000/edit-user-male.png"/> <br>
+      <h2 style="   margin: 0px 8px 10px 8px; color: #0d0d0d">Sign Up</h2>
+    </div>
+
+
+    <!-- Login Form -->
+    <form method="post" class="wrapper fadeInDown">
+                 {% if signupForm.errors %}
+
+            {% for field in signupForm %}
+                {% if field.errors %}
+                      <div class="alert alert-danger" class="fadeIn first" role="alert">
+                  {{ field.errors|striptags }}
+                </div>
+
+                {% endif %}
+            {% endfor %}
+
+
+    {% endif %}
+
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="alert alert-success" class="fadeIn first" class="wrapper fadeInDown" role="alert">
+                  {{ message }}
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        {% csrf_token %}
+      {% render_field signupForm.email class+="fadeIn second"%}
+     {% render_field  signupForm.first_name class+="fadeIn second" %}
+      {% render_field  signupForm.last_name class+="fadeIn second" %}
+      {% render_field  signupForm.password class+="fadeIn third" %}
+      {% render_field  signupForm.repassword class+="fadeIn third" %}
+
+      <input type="submit" class="fadeIn fourth" value="Sign Up">
+    </form>
+
+    <!-- Remind Passowrd -->
+    <div id="formFooter">
+      <a class="underlineHover" href="{% url 'signin' %}">Do you already have an account?</a>
+    </div>
+
+  </div>
+</div>
+    <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+
+{% endblock content %}

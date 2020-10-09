@@ -1,0 +1,59 @@
+{% extends 'blog.html' %}
+{% load static %}
+{% block content %}
+    {% include 'navbar.html' %}
+    <!-- main content start  -->
+        <div class="container mt-5">
+            <div class="row main-section">
+                <div class="col-sm-12 col-md-9 col-lg-9">
+                    {% if posts %}
+                        {% for post in posts %}
+
+
+
+                    <div class="card rounded-0 shadow-sm" >
+                        <div class="card-header">
+                            <span>By</span>
+                            <span class="text-success"> {{ post.postAdmin.username }}</span>
+                            <span>On</span>
+                            <span class="text-success"> {{ post.postDate}}</span>
+                        </div>
+                        <div class="card-body">
+                             <img class="card-img-top" src="{{  post.postImage.url }}" alt="bootstrap simple blog">
+                            <hr>
+                            <h2 class="card-title">{{ post.postHeader}}</h2>
+                            <p class="card-text">{{ post.postData|slice:":250" }}.....</p>
+                            <a href="{% url 'viewpost' pk=post.postID  %}" class="btn btn-primary">Read more</a>
+                        </div>
+                    </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="d-flex justify-content-center">
+                        <nav aria-label="...">
+                            <ul class="pagination">
+                                <li class="page-item disabled">
+                                    <span class="page-link">Previous</span>
+                                </li>
+                                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item active">
+                                    <span class="page-link">
+                                        2
+                                        <span class="sr-only">(current)</span>
+                                    </span>
+                                </li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                {% include 'categoryList.html' %}
+
+            </div>
+        </div>
+
+        <!-- main content ends -->
+{% endblock content %}

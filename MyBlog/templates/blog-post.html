@@ -1,0 +1,44 @@
+{% extends 'blog.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+        <!-- navbar ends -->
+        <!-- main content start  -->
+        <div class="container mt-5">
+            <div class="row main-section">
+                <div class="col-sm-12 col-md-9 col-lg-9">
+                    <div class="card rounded-0 shadow-sm" >
+                        <div class="card-header">
+                            <span>By</span>
+                            <span class="text-success"> {{ post.postAdmin.username }}</span>
+                            <span>On</span>
+                            <span class="text-success"> {{ post.postDate }}</span>
+                        </div>
+                        <div class="card-body">
+                            <img class="card-img-top" src="{{ post.postImage.url }}" alt="bootstrap simple blog">
+                            <hr>
+                            <h2 class="card-title">{{ post.postHeader }}</h2>
+                             {{ post.postData }}
+                        </div>
+                        <div class="card-footer">
+                            <div class="row">
+                                <div class="col col-sm-10 col-md-10">
+                                    <div class="form-group">
+                                        <input type="text" name="comment" class="form-control rounded-0" value="Enter comment...">
+                                    </div>
+                                </div>
+                                <div class="col col-sm-2 col-md-2">
+                                    <button class="btn btn-warning rounded-0">Submit</button>
+                                </div>
+                            </div>
+                            <div class="comment-section">
+                                <span class="text-success bg-faded">Nice Aritcle...</span>
+                                <span class="text-success">Wow...Nice!</span>
+                                <span class="text-success">Nice one...Great thanks...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% include 'categoryList.html' %}
+            </div>
+        </div>
+{% endblock content %}
