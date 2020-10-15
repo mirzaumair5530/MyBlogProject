@@ -1,3 +1,4 @@
 python
 MyBlog/db.sqlite3
+.idea/
 venv
