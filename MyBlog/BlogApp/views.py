@@ -133,7 +133,7 @@ def passwordForget(request):
         form= resetPassword(request.POST)
         if form.is_valid():
             email= form.cleaned_data['email']
-            print(email)
+            return redirect('password_reset_done')
     data={
         'title': 'Reset Password',
         'form' : form,
