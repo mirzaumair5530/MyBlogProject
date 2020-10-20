@@ -6,6 +6,10 @@
         <div class="container mt-5">
             <div class="row main-section">
                 <div class="col-sm-12 col-md-9 col-lg-9">
+                {% if alter %}
+
+                    <h1 style="color: red">{{ alter }}</h1>
+                    {% else %}
                     {% if posts %}
                         {% for post in posts %}
 
@@ -28,6 +32,8 @@
                     </div>
                         {% endfor %}
                     {% endif %}
+
+                {% endif %}
 
                     <div class="d-flex justify-content-center">
                         <nav aria-label="...">

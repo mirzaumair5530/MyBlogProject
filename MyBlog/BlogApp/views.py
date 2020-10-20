@@ -8,22 +8,30 @@ from .search import PostSearch
 from .decorators import *
 from .customFilters import register
 
+
 # @login_required(login_url='signin')
 @register.filter(name='show')
-def show(value,*args, **kwargs):
+def show(value, *args, **kwargs):
     return value[:value]
 
 
 def index(request):
-    posts= BlogPost.objects.all()
-    if request.method=='POST':
-        search= PostSearch(request.POST, queryset=posts)
-        posts= search.qs
-    context={
-        'posts': posts
+    alter = None
+    posts = BlogPost.objects.all()
+    if request.method == 'POST':
+        search = PostSearch(request.POST, queryset=posts)
+        if search is None:
+            alter = "No result found."
+        else:
+            posts = search.qs
+            print(posts[0].postHeader)
+
+    context = {
+        'posts': posts,
+        "alter": alter
     }
 
-    return render(request, 'homepage.html', context=context )
+    return render(request, 'homepage.html', context=context)
 
 
 def about(request):
@@ -56,7 +64,7 @@ def readMore(request):
 
 @login_required(login_url='signin')
 def uploadPost(request):
-    form = postDate(initial={ 'postAdmin': request.user})
+    form = postDate(initial={'postAdmin': request.user})
     if request.method == "POST":
         form = postDate(request.POST, request.FILES)
         print(form.is_valid())
@@ -73,6 +81,7 @@ def uploadPost(request):
         'form': form
     }
     return render(request, 'UploadPost.html', context=data)
+
 
 @is_loggedin
 def signin(request):
@@ -101,6 +110,7 @@ def logoutuser(request):
     logout(request)
     return redirect(signin)
 
+
 @is_loggedin
 def signup(request):
     form = Registration()
@@ -109,7 +119,7 @@ def signup(request):
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            user= RegisterUser.objects.create_user(username=email.split('@')[0], password=password,email=email )
+            user = RegisterUser.objects.create_user(username=email.split('@')[0], password=password, email=email)
 
             messages.success(request, 'User has been Successfully registered.')
             return redirect(signup)
@@ -119,23 +129,29 @@ def signup(request):
     }
     return render(request, 'SignIn_SignUp/Signup.html', context=data)
 
+
 def viewPost(request, pk):
-    post= BlogPost.objects.get(pk=pk)
-    context={
-        'post':post
+    post = BlogPost.objects.get(pk=pk)
+    context = {
+        'post': post
     }
     return render(request, 'blog-post.html', context)
 
-def passwordForget(request):
-    form= resetPassword()
 
-    if request.method=='POST':
-        form= resetPassword(request.POST)
+def passwordForget(request):
+    form = resetPassword()
+
+    if request.method == 'POST':
+        form = resetPassword(request.POST)
         if form.is_valid():
-            email= form.cleaned_data['email']
+            email = form.cleaned_data['email']
             return redirect('password_reset_done')
-    data={
+    data = {
         'title': 'Reset Password',
-        'form' : form,
+        'form': form,
     }
-    return render(request, 'passwordForget/passwordForget.html', context=data )
+    return render(request, 'passwordForget/passwordForget.html', context=data)
+
+
+def profile(request):
+    return render(request, template_name='SignIn_SignUp/profile.html')
