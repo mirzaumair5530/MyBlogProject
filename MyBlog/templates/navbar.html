@@ -1,4 +1,5 @@
 <!-- navbar start -->
+{% load widget_tweaks %}
         <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
             <a class="navbar-brand" href="{% url 'index' %}">My Blog</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,8 +20,9 @@
                         <a class="nav-link" href="{% url 'notification' %}">Notification</a>
                     </li>
                 </ul>
-                <form class="form-inline my-2 my-lg-0" style="padding-right: 30%;" method="post" action="{% url 'index' %}">{% csrf_token %}
-                    <input class="form-control mr-sm-2 rounded-0" type="search" placeholder="Search" aria-label="Search">
+                <form class="form-inline my-2 my-lg-0" method="post" style="padding-right: 30%;" action="{% url 'index' %}">{% csrf_token %}
+{#                    <input class="form-control mr-sm-2 rounded-0" type="search" placeholder="Search" aria-label="Search">#}
+                    {% render_field search.form.postHeader|add_class:"form-control mr-sm-2 rounded-0" placeholder="Search" %}
                     <button class="btn btn-outline-success rounded-0 my-2 my-sm-0" type="submit">Search</button>
 
                 </form>

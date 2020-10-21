@@ -51,7 +51,7 @@ class Registration(forms.ModelForm):
 
     repassword= forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": 'Confirm Password'}), required=True,
                               error_messages={'required': "Password is required!"} )
-
+    profileImage= forms.ImageField(label="Profile Image")
     # def clean_password(self):
     #     password = self.cleaned_data.get('password')
     #     confPassword= self.cleaned_data.get('repassword')

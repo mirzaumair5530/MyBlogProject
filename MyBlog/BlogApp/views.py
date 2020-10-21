@@ -16,19 +16,19 @@ def show(value, *args, **kwargs):
 
 
 def index(request):
-    alter = None
+    search= PostSearch()
     posts = BlogPost.objects.all()
-    if request.method == 'POST':
+    if request.method=="POST":
         search = PostSearch(request.POST, queryset=posts)
-        if search is None:
-            alter = "No result found."
-        else:
-            posts = search.qs
-            print(posts[0].postHeader)
+        print(search)
+        posts = search.qs
+        print(posts)
+        for i in posts:
+            print(i.postHeader)
 
     context = {
         'posts': posts,
-        "alter": alter
+        "search": search
     }
 
     return render(request, 'homepage.html', context=context)
@@ -64,23 +64,22 @@ def readMore(request):
 
 @login_required(login_url='signin')
 def uploadPost(request):
-    form = postDate(initial={'postAdmin': request.user})
-    if request.method == "POST":
-        form = postDate(request.POST, request.FILES)
-        print(form.is_valid())
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Post has been successfully submitted.')
-            data = {
-                'title': 'uploadPost',
-                'form': form
-            }
-            return redirect(uploadPost)
-    data = {
-        'title': 'uploadPost',
-        'form': form
-    }
-    return render(request, 'UploadPost.html', context=data)
+    if request.user.is_superuser:
+        form = postDate(initial={'postAdmin': request.user})
+        if request.method == "POST":
+            form = postDate(request.POST, request.FILES)
+            print(form.is_valid())
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Post has been successfully submitted.')
+
+        data = {
+            'title': 'uploadPost',
+            'form': form
+        }
+        return render(request, 'UploadPost.html', context=data)
+    else:
+        return redirect('index')
 
 
 @is_loggedin
@@ -119,7 +118,10 @@ def signup(request):
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            user = RegisterUser.objects.create_user(username=email.split('@')[0], password=password, email=email)
+            fname= form.cleaned_data['first_name']
+            lname= form.cleaned_data['last_name']
+            user = RegisterUser.objects.create_user(username=email.split('@')[0], password=password, email=email,
+                                                    first_name=fname, last_name=lname)
 
             messages.success(request, 'User has been Successfully registered.')
             return redirect(signup)
@@ -152,6 +154,12 @@ def passwordForget(request):
     }
     return render(request, 'passwordForget/passwordForget.html', context=data)
 
-
+@login_required(login_url='signin')
 def profile(request):
-    return render(request, template_name='SignIn_SignUp/profile.html')
+    email = request.user.email
+    fname = request.user.first_name
+    lname = request.user.last_name
+    userForm = Registration(initial={'last_name':lname,
+                            "first_name":fname})
+
+    return render(request, template_name='SignIn_SignUp/profile.html', context={'user':userForm, })
