@@ -1,6 +1,14 @@
 {% load widget_tweaks %}
 
-<form>
+<form method="post" enctype="multipart/form-data">
+    {% if user.errors %}
+        {% for fields in user %}
+
+            {{ fields.error }}
+        {% endfor %}
+
+    {% endif %}
+    {% csrf_token %}
   <div class="form-row">
       <h4 class="profileHeader" style="text-align: center;"><b>Update Profile Data</b></h4>
       <br>
@@ -35,7 +43,7 @@
     <div class="form-row">
       <div class="form-group">
         <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="gridCheck" style="margin-left: 2%;">
+              <input class="form-check-input" type="checkbox" id="gridCheck" style="margin-left: 2%;" required>
               <label class="form-check-label" for="gridCheck">
                 Check me out
               </label>

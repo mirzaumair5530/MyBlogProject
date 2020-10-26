@@ -28,7 +28,9 @@
                 </form>
                 {% if request.user.is_authenticated %}
                     <div>
+                    <a class="btn btn-primary" href="{% url 'profile' %}" role="button">Profile</a>
                 <a class="btn btn-primary" href="{% url 'logout' %}" role="button">logout</a>
+
                     </div>
                 {% else %}
                 <div>

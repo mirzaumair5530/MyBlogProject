@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
 from .froms import *
 from django.contrib import messages
-from .models import RegisterUser, BlogPost
+from .models import RegisterUser, BlogPost, upload_to
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from .search import PostSearch
 from .decorators import *
 from .customFilters import register
+from django.contrib.auth.models import Group
 
 
 # @login_required(login_url='signin')
@@ -16,9 +17,9 @@ def show(value, *args, **kwargs):
 
 
 def index(request):
-    search= PostSearch()
+    search = PostSearch()
     posts = BlogPost.objects.all()
-    if request.method=="POST":
+    if request.method == "POST":
         search = PostSearch(request.POST, queryset=posts)
         print(search)
         posts = search.qs
@@ -118,10 +119,12 @@ def signup(request):
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            fname= form.cleaned_data['first_name']
-            lname= form.cleaned_data['last_name']
+            fname = form.cleaned_data['first_name']
+            lname = form.cleaned_data['last_name']
+            group = Group.objects.get(name="User_Group")
             user = RegisterUser.objects.create_user(username=email.split('@')[0], password=password, email=email,
                                                     first_name=fname, last_name=lname)
+            user.groups.add(group)
 
             messages.success(request, 'User has been Successfully registered.')
             return redirect(signup)
@@ -154,12 +157,23 @@ def passwordForget(request):
     }
     return render(request, 'passwordForget/passwordForget.html', context=data)
 
+
 @login_required(login_url='signin')
 def profile(request):
-    email = request.user.email
     fname = request.user.first_name
     lname = request.user.last_name
-    userForm = Registration(initial={'last_name':lname,
-                            "first_name":fname})
+    user = RegisterUser.objects.get(email=request.user.email)
+    userForm = profileUpdate(initial={'last_name': lname,
+                                      "first_name": fname})
+    # userForm = profileUpdate(initial=)
+    if request.method == "POST":
+        userForm = profileUpdate(request.POST, request.FILES)
+        if userForm.is_valid():
 
-    return render(request, template_name='SignIn_SignUp/profile.html', context={'user':userForm, })
+            user.last_name = userForm.cleaned_data['last_name']
+            user.first_name = userForm.cleaned_data['first_name']
+            if userForm.cleaned_data['profileImage']:
+                user.profileImage = userForm.cleaned_data['profileImage']
+            user.save()
+
+    return render(request, template_name='SignIn_SignUp/profile.html', context={'user': userForm, })
