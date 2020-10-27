@@ -1,29 +1,38 @@
 from django.shortcuts import render, redirect
 from .froms import *
 from django.contrib import messages
-from .models import RegisterUser, BlogPost
+from .models import RegisterUser, BlogPost, upload_to
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from .search import PostSearch
 from .decorators import *
 from .customFilters import register
+from django.contrib.auth.models import Group
+
 
 # @login_required(login_url='signin')
 @register.filter(name='show')
-def show(value,*args, **kwargs):
+def show(value, *args, **kwargs):
     return value[:value]
 
 
 def index(request):
-    posts= BlogPost.objects.all()
-    if request.method=='POST':
-        search= PostSearch(request.POST, queryset=posts)
-        posts= search.qs
-    context={
-        'posts': posts
+    search = PostSearch()
+    posts = BlogPost.objects.all()
+    if request.method == "POST":
+        search = PostSearch(request.POST, queryset=posts)
+        print(search)
+        posts = search.qs
+        print(posts)
+        for i in posts:
+            print(i.postHeader)
+
+    context = {
+        'posts': posts,
+        "search": search
     }
 
-    return render(request, 'homepage.html', context=context )
+    return render(request, 'homepage.html', context=context)
 
 
 def about(request):
@@ -56,23 +65,23 @@ def readMore(request):
 
 @login_required(login_url='signin')
 def uploadPost(request):
-    form = postDate(initial={ 'postAdmin': request.user})
-    if request.method == "POST":
-        form = postDate(request.POST, request.FILES)
-        print(form.is_valid())
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Post has been successfully submitted.')
-            data = {
-                'title': 'uploadPost',
-                'form': form
-            }
-            return redirect(uploadPost)
-    data = {
-        'title': 'uploadPost',
-        'form': form
-    }
-    return render(request, 'UploadPost.html', context=data)
+    if request.user.is_superuser:
+        form = postDate(initial={'postAdmin': request.user})
+        if request.method == "POST":
+            form = postDate(request.POST, request.FILES)
+            print(form.is_valid())
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Post has been successfully submitted.')
+
+        data = {
+            'title': 'uploadPost',
+            'form': form
+        }
+        return render(request, 'UploadPost.html', context=data)
+    else:
+        return redirect('index')
+
 
 @is_loggedin
 def signin(request):
@@ -101,6 +110,7 @@ def logoutuser(request):
     logout(request)
     return redirect(signin)
 
+
 @is_loggedin
 def signup(request):
     form = Registration()
@@ -109,7 +119,12 @@ def signup(request):
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            user= RegisterUser.objects.create_user(username=email.split('@')[0], password=password,email=email )
+            fname = form.cleaned_data['first_name']
+            lname = form.cleaned_data['last_name']
+            group = Group.objects.get(name="User_Group")
+            user = RegisterUser.objects.create_user(username=email.split('@')[0], password=password, email=email,
+                                                    first_name=fname, last_name=lname)
+            user.groups.add(group)
 
             messages.success(request, 'User has been Successfully registered.')
             return redirect(signup)
@@ -119,23 +134,46 @@ def signup(request):
     }
     return render(request, 'SignIn_SignUp/Signup.html', context=data)
 
+
 def viewPost(request, pk):
-    post= BlogPost.objects.get(pk=pk)
-    context={
-        'post':post
+    post = BlogPost.objects.get(pk=pk)
+    context = {
+        'post': post
     }
     return render(request, 'blog-post.html', context)
 
-def passwordForget(request):
-    form= resetPassword()
 
-    if request.method=='POST':
-        form= resetPassword(request.POST)
+def passwordForget(request):
+    form = resetPassword()
+
+    if request.method == 'POST':
+        form = resetPassword(request.POST)
         if form.is_valid():
-            email= form.cleaned_data['email']
+            email = form.cleaned_data['email']
             return redirect('password_reset_done')
-    data={
+    data = {
         'title': 'Reset Password',
-        'form' : form,
+        'form': form,
     }
-    return render(request, 'passwordForget/passwordForget.html', context=data )
+    return render(request, 'passwordForget/passwordForget.html', context=data)
+
+
+@login_required(login_url='signin')
+def profile(request):
+    fname = request.user.first_name
+    lname = request.user.last_name
+    user = RegisterUser.objects.get(email=request.user.email)
+    userForm = profileUpdate(initial={'last_name': lname,
+                                      "first_name": fname})
+    # userForm = profileUpdate(initial=)
+    if request.method == "POST":
+        userForm = profileUpdate(request.POST, request.FILES)
+        if userForm.is_valid():
+
+            user.last_name = userForm.cleaned_data['last_name']
+            user.first_name = userForm.cleaned_data['first_name']
+            if userForm.cleaned_data['profileImage']:
+                user.profileImage = userForm.cleaned_data['profileImage']
+            user.save()
+
+    return render(request, template_name='SignIn_SignUp/profile.html', context={'user': userForm, })

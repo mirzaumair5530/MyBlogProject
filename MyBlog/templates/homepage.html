@@ -6,6 +6,10 @@
         <div class="container mt-5">
             <div class="row main-section">
                 <div class="col-sm-12 col-md-9 col-lg-9">
+                {% if alter %}
+
+                    <h1 style="color: red">{{ alter }}</h1>
+                    {% else %}
                     {% if posts %}
                         {% for post in posts %}
 
@@ -22,12 +26,14 @@
                              <img class="card-img-top" src="{{  post.postImage.url }}" alt="bootstrap simple blog">
                             <hr>
                             <h2 class="card-title">{{ post.postHeader}}</h2>
-                            <p class="card-text">{{ post.postData|slice:":250" }}.....</p>
+                            <p class="card-text">{{ post.postData|slice:":250"|safe }}.....</p>
                             <a href="{% url 'viewpost' pk=post.postID  %}" class="btn btn-primary">Read more</a>
                         </div>
                     </div>
                         {% endfor %}
                     {% endif %}
+
+                {% endif %}
 
                     <div class="d-flex justify-content-center">
                         <nav aria-label="...">
