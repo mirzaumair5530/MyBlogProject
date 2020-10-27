@@ -17,7 +17,7 @@
                             <img class="card-img-top" src="{{ post.postImage.url }}" alt="bootstrap simple blog">
                             <hr>
                             <h2 class="card-title">{{ post.postHeader }}</h2>
-                             {{ post.postData }}
+                             {{ post.postData| safe }}
                         </div>
                         <div class="card-footer">
                             <div class="row">

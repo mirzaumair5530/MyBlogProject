@@ -26,7 +26,7 @@
                              <img class="card-img-top" src="{{  post.postImage.url }}" alt="bootstrap simple blog">
                             <hr>
                             <h2 class="card-title">{{ post.postHeader}}</h2>
-                            <p class="card-text">{{ post.postData|slice:":250" }}.....</p>
+                            <p class="card-text">{{ post.postData|slice:":250"|safe }}.....</p>
                             <a href="{% url 'viewpost' pk=post.postID  %}" class="btn btn-primary">Read more</a>
                         </div>
                     </div>
