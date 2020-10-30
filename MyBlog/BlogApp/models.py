@@ -8,6 +8,8 @@ from django.contrib.auth.models import UserManager, AbstractUser
 # Create your models here.
 def postid():
     return 'Post' + token_hex(5)
+def cid():
+    return token_hex(5)
 
 
 def upload_to(_, filename):
@@ -99,11 +101,17 @@ class BlogPost(models.Model):
     postData = models.TextField(null=True)
     postDate = models.DateField(auto_now=True)
     postImage = models.ImageField(upload_to=upload_to)
-    postAdmin = models.ForeignKey( to=RegisterUser, on_delete=models.CASCADE)
+    postAdmin = models.ForeignKey(to=RegisterUser, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.postID
 
-class profile(models.Model):
-    user = models.OneToOneField('RegisterUser', on_delete=models.CASCADE)
-    name = models
+class Comment(models.Model):
+    id = models.CharField(primary_key=True, default= cid, unique=True, max_length=200)
+    commenter = models.ForeignKey(to='RegisterUser', on_delete=models.CASCADE)
+    comment_post = models.ForeignKey('BlogPost', on_delete=models.CASCADE)
+    comment = models.TextField()
+    postDate = models.DateField(auto_now=True)
+
+    def __str__(self):
+        return self.id
