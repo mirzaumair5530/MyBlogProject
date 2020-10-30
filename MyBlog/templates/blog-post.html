@@ -1,5 +1,6 @@
 {% extends 'blog.html' %}
 {% block content %}
+    {% load widget_tweaks %}
 {% include 'navbar.html' %}
         <!-- navbar ends -->
         <!-- main content start  -->
@@ -20,20 +21,43 @@
                              {{ post.postData| safe }}
                         </div>
                         <div class="card-footer">
+                            <form method="post">
+                                      {% if cform.errors %}
+                            {% for i in cform %}
+                                {{ i.name }}{{ i.errors }}
+                            {% endfor %}
+                        {% endif %}
                             <div class="row">
+                                {% csrf_token %}
+
                                 <div class="col col-sm-10 col-md-10">
                                     <div class="form-group">
-                                        <input type="text" name="comment" class="form-control rounded-0" value="Enter comment...">
+{#                                        <input type="text" name="comment" class="form-control rounded-0" value="Enter comment...">#}
+                                            {% render_field cform.comment class+="form-control rounded-0" placeholder="Enter comment..." %}
                                     </div>
                                 </div>
+                                 {{ cform.comment_post }}
+                                {{ cform.commenter }}
                                 <div class="col col-sm-2 col-md-2">
                                     <button class="btn btn-warning rounded-0">Submit</button>
                                 </div>
+
                             </div>
+
+                                </form>
+
                             <div class="comment-section">
-                                <span class="text-success bg-faded">Nice Aritcle...</span>
-                                <span class="text-success">Wow...Nice!</span>
-                                <span class="text-success">Nice one...Great thanks...</span>
+                                {% if comments %}
+                                    {% for comment in comments %}
+                                        <span class="text-success bg-faded">{{ comment.comment }} </span>
+                                         <i style="align: right; color: #0d0d0d; font-size: small "> by {{ comment.commenter.username }}</i>
+                                        <hr>
+
+                                    {% endfor %}
+                                {% endif %}
+{#                                <span class="text-success bg-faded">Nice Aritcle...</span>#}
+{#                                <span class="text-success">Wow...Nice!</span>#}
+{#                                <span class="text-success">Nice one...Great thanks...</span>#}
                             </div>
                         </div>
                     </div>

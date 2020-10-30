@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .froms import *
 from django.contrib import messages
-from .models import RegisterUser, BlogPost, upload_to
+from .models import (RegisterUser, BlogPost, upload_to, Comment)
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from .search import PostSearch
@@ -137,8 +137,20 @@ def signup(request):
 
 def viewPost(request, pk):
     post = BlogPost.objects.get(pk=pk)
+    commentForm = postComment(initial={"comment_post": post,
+                                       "commenter": request.user, })
+    comments = post.comment_set.all()
+
+    if request.method == "POST":
+        commentForm = postComment(request.POST, )
+        commentForm.user = request.user
+        if commentForm.is_valid():
+            commentForm.save()
+
     context = {
-        'post': post
+        'post': post,
+        'cform': commentForm,
+        'comments': comments,
     }
     return render(request, 'blog-post.html', context)
 

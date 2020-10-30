@@ -1,7 +1,7 @@
 from django import forms
 from .models import BlogPost
 from django.core import validators
-from .models import RegisterUser
+from .models import (RegisterUser, Comment)
 
 
 class postDate(forms.ModelForm, forms.Form):
@@ -93,3 +93,17 @@ class profileUpdate(forms.Form):
                                 widget=forms.TextInput(attrs={"placeholder": "Last Name"}),min_length=1)
 
     profileImage = forms.ImageField(label="Profile Image", required=False)
+
+class postComment(forms.ModelForm):
+    comment= forms.CharField(label="Comments", widget=forms.TextInput)
+
+
+    class Meta:
+        model = Comment
+        fields = "__all__"
+        exclude = ['id']
+
+        widgets={
+            "comment_post" :  forms.HiddenInput(),
+            "commenter" : forms.HiddenInput()
+        }
