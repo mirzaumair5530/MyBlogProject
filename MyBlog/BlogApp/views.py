@@ -8,27 +8,36 @@ from .search import PostSearch
 from .decorators import *
 from .customFilters import register
 from django.contrib.auth.models import Group
+from django.core.paginator import Paginator
+# from .pagination import Contactlist
 
 
-# @login_required(login_url='signin')
-@register.filter(name='show')
-def show(value, *args, **kwargs):
-    return value[:value]
 
 
 def index(request):
     search = PostSearch()
     posts = BlogPost.objects.all()
+    paginator = Paginator(object_list=posts, per_page=3)
     if request.method == "POST":
         search = PostSearch(request.POST, queryset=posts)
-        print(search)
         posts = search.qs
-        print(posts)
-        for i in posts:
-            print(i.postHeader)
+        if len(posts)==0:
+            alter="Result not found!"
+        else:
+            alter=None
+        context = {
+            'posts': posts,
+            "search": search,
+            "alter" : alter,
+        }
+        return render(request, 'homepage.html', context=context)
+
+
+    page_number= request.GET.get('page')
+    page_obj= paginator.get_page(page_number)
 
     context = {
-        'posts': posts,
+        'posts': page_obj,
         "search": search
     }
 

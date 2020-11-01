@@ -28,6 +28,10 @@
                 </form>
                 {% if request.user.is_authenticated %}
                     <div>
+                    {% if request.user.is_superuser %}
+                    <a class="btn btn-primary" href="{% url 'uploadpost' %}" role="button">Upload Post</a>
+                        {% endif %}
+
                     <a class="btn btn-primary" href="{% url 'profile' %}" role="button">Profile</a>
                 <a class="btn btn-primary" href="{% url 'logout' %}" role="button">logout</a>
 
