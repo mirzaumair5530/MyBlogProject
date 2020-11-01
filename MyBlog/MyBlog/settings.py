@@ -86,7 +86,7 @@ DATABASES = {
         # 'NAME': "MyBlogDatabase",
         'NAME': "db.sqlite3",
         # 'USER' : "postgres",
-        # 'PASSWORD' : "umair55330",
+        # 'PASSWORD' : os.environ.get('DB_Password')
         # 'HOST' : "localhost",
         # 'PORT' : '5432'
     }
@@ -138,6 +138,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "status.ly83@gmail.com"
-EMAIL_HOST_PASSWORD = "##umair@55330@##"
+EMAIL_HOST_USER = os.environ.get('User_Email')
+EMAIL_HOST_PASSWORD = os.environ.get('User_Password')
 
