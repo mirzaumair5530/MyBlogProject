@@ -8,6 +8,8 @@ from django.contrib.auth.models import UserManager, AbstractUser
 # Create your models here.
 def postid():
     return 'Post' + token_hex(5)
+
+
 def cid():
     return token_hex(5)
 
@@ -15,12 +17,6 @@ def cid():
 def upload_to(_, filename):
     ext = filename.split('0')[-1]
     return "{0}.{1}".format(token_hex(4), ext)
-
-
-
-
-
-
 
 
 class RegisteredUserManager(UserManager):
@@ -45,21 +41,19 @@ class RegisteredUserManager(UserManager):
         user.save(using=self._db)
         return user
 
-
-
-    def create_superuser(self, username, email=None, password=None, **extra_fields):
+    def create_superuser(self, username, email=None, password=None, first_name=None, last_name=None, **extra_fields):
 
         user = self.create_user(
             email=self.normalize_email(email),
             username=username,
             password=password,
+            first_name=first_name,
+            last_name=last_name
         )
         user.is_admin = True
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
-
-
 
 
 class RegisterUser(AbstractUser):
@@ -77,7 +71,7 @@ class RegisterUser(AbstractUser):
     profileImage = models.ImageField(null=True, upload_to=upload_to)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'password']
+    REQUIRED_FIELDS = ['username', 'password', 'first_name', "last_name"]
 
     objects = RegisteredUserManager()
 
@@ -106,8 +100,9 @@ class BlogPost(models.Model):
     def __str__(self):
         return self.postID
 
+
 class Comment(models.Model):
-    id = models.CharField(primary_key=True, default= cid, unique=True, max_length=200)
+    id = models.CharField(primary_key=True, default=cid, unique=True, max_length=200)
     commenter = models.ForeignKey(to='RegisterUser', on_delete=models.CASCADE)
     comment_post = models.ForeignKey('BlogPost', on_delete=models.CASCADE)
     comment = models.TextField()
